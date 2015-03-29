@@ -1,14 +1,6 @@
-<html>
-<body>
-	{% if loggedIn == True %}
-	<form action="{{ url_for('signout') }}" method="post">
-    <button name="logout_button" >Logout</button>
-	</form>
-	{% else %}
-	<form action="{{ url_for('DisplayLogin') }}" method="get">
-    <button name="login_button" >Login</button>
-	</form>
-	{% endif %}
+{% extends "layout.html" %}
+{% block body %}
+<div id="PageWrapper">
 <form action="{{ url_for('delete_post') }}" method=post>
 	<dl>
 	<dt>Item Name:
@@ -21,5 +13,5 @@
 	<dd><input type=submit value="Delete Item">
 	</dl>	
 </form>
-</body>
-</html>
+</div>
+{% endblock %}

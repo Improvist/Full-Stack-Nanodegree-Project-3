@@ -1,24 +1,16 @@
-<html>
-<body>
-	{% if loggedIn == True %}
-	<form action="{{ url_for('signout') }}" method="post">
-    <button name="logout_button" >Logout</button>
-	</form>
-	{% else %}
-	<form action="{{ url_for('DisplayLogin') }}" method="get">
-    <button name="login_button" >Login</button>
-	</form>
-	{% endif %}
-	
-<div id="PageWrapper" style="width: 500px;">
-	<div style="float: left">
+{% extends "layout.html" %}
+{% block body %}
+<div id="PageWrapper">
+	<div id="AllCategoriesDiv">
+	<h2>All Categories</h2>
 	<dl>
 		{% for c in categories %}
 		<dd><a href='/catalog/{{c.name}}/items'>{{c.name}}</a>
 		{% endfor %}
 	</dl>	
 	</div>
-	<div style="float: right">
+	<div id="RightFloatDiv">
+	<h2>Recent Additions</h2>
 	<dl>
 		{% for i in items %}
 		<dd><a href='/catalog/{{i.category}}/{{i.name}}'>{{i.name}}</a> (<i>{{i.category}}</i>)
@@ -26,5 +18,4 @@
 	</dl>
 	</div>
 </div>
-</body>
-</html>
+{% endblock %}

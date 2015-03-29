@@ -1,17 +1,6 @@
-<html>
-<body>
-	{% if loggedIn == True %}
-	<form action="{{ url_for('signout') }}" method="post">
-    <button name="logout_button" >Logout</button>
-	</form>
-	{% else %}
-	<form action="{{ url_for('DisplayLogin') }}" method="get">
-    <button name="login_button" >Login</button>
-	</form>
-	{% endif %}
-
-	{{message}}
-
+{% extends "layout.html" %}
+{% block body %}
+<div id="PageWrapper">
 <form action="{{ url_for('add_user') }}" method=post>
 	<dl>
 	<dt>User Real Name:
@@ -19,10 +8,11 @@
 	<dt>Username:
 	<dd><input type=text size=30 name=Username>
 	<dt>Password:
-	<dd><input type=text size=30 name=Password>
+	<dd><input type=password size=30 name=Password>
 	<dt>Confirm Password:
-	<dd><input type=text size=30 name=ConfirmPassword>
+	<dd><input type=password size=30 name=ConfirmPassword>
 	<dd><input type=submit value="Add Item">	
 	</dl>
-</form>	
-</body>
+</form>
+</div>
+{% endblock %}

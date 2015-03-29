@@ -1,0 +1,40 @@
+<html>
+<head>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+	<header class="group">
+		<div style="float: left">
+		{% if loggedIn == True %}
+		<form action="{{ url_for('signout') }}" method="post">
+	    <button id="LogoutButton" class="LogXButton" name="logout_button" >Logout</button>
+		</form>
+		{% else %}
+		<form action="{{ url_for('DisplayLogin') }}" method="get">
+	    <button id="LoginButton" class="LogXButton" name="login_button" >Login</button>
+		</form>
+		{% endif %}
+		</div>
+		<div id="HeaderTitle" style="float: right">
+			<h3>Catalog Project for Nanodegree</h3>
+		</div>
+	</header>
+
+	<div id="LinkBar">
+		<ul>
+		<li id="FirstLink"><a href='/home'>Home</a></li>
+		{% if loggedIn == True %}
+		<li><a href='/catalog/add_item'>Add Item</a></li>
+		<li><a href='/catalog/add_category'>Add Category</a><li>
+		<li><a href='/catalog/add_user'>Add User</a></li>
+		{% endif %}
+		</ul>
+	</div>
+
+	<div id="alert">{{message}}</div>
+
+	<div id="ContentWrapper">
+	{% block body %} {% endblock %}
+	</div>
+</body>
+</html>

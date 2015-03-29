@@ -1,16 +1,6 @@
-<html>
-<body>
-	{% if loggedIn == True %}
-	<form action="{{ url_for('signout') }}" method="post">
-    <button name="logout_button" >Logout</button>
-	</form>
-	{% else %}
-	<form action="{{ url_for('DisplayLogin') }}" method="get">
-    <button name="login_button" >Login</button>
-	</form>
-	{% endif %}
-
-<div id="PageWrapper" style="width: 500px;">
+{% extends "layout.html" %}
+{% block body %}
+<div id="PageWrapper">
 	<div style="float: left">
 		<h2>All Categories</h2>
 		<dl>
@@ -29,6 +19,4 @@
 		</dl>
 	</div>
 </div>
-
-</body>
-</html>
+{% endblock %}

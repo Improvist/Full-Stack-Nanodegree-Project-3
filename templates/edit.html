@@ -1,15 +1,7 @@
-<html>
-<body>
-	{% if loggedIn == True %}
-	<form action="{{ url_for('signout') }}" method="post">
-    <button name="logout_button" >Logout</button>
-	</form>
-	{% else %}
-	<form action="{{ url_for('DisplayLogin') }}" method="get">
-    <button name="login_button" >Login</button>
-	</form>
-	{% endif %}
-	
+{% extends "layout.html" %}
+{% block body %}
+
+<div id="PageWrapper">
 <form action="{{ url_for('edit_post') }}" method=post>
 	<dl>Leave items blank if you do not want to edit that field.
 	<dt>New Item Name:
@@ -27,5 +19,5 @@
 	<dd><input type=submit value="Save Changes">
 	</dl>	
 </form>
-</body>
-</html>
+</div>
+{% endblock %}

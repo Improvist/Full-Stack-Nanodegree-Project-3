@@ -1,0 +1,36 @@
+header { background-color: #66CCff;; border-radius: 10px; color: white; font-family: helvetica; height:45px;}
+
+body {background-color: gray;}
+
+h2 {text-align: center;}
+
+#ContentWrapper {position: absolute; margin-left: 10%; margin-right: 25%; margin-top: 1%; background-color: white; width: 80%; height: 60%;
+				 font-size: 18px;}
+
+#PageWrapper { width: 600px; padding:5px;}
+
+#LinkBar {color: white; height: 25px;}
+#LinkBar ul { list-style-type: none; padding-left: 5px; margin-top: 3px; margin-bottom: 5px; }
+#LinkBar ul li {display: inline; padding-left: 20px;}
+#FirstLink {padding-left: 0px !important; margin-left: 0px !important;}
+#LinkBar ul li a {text-decoration: none; color: white; font-family: helvetica; font-weight: bold;}
+#LinkBar ul li a:visited {text-decoration: none; color: white;  font-family: helvetica; font-weight: bold;}
+
+#alert {background-color: red; color: white; width:100%; text-align: center;}
+
+#AllCategoriesDiv {float: left; margin-left: 25px;}
+
+#RightFloatDiv {float: right;}
+
+#HeaderTitle {padding-right: 10px; margin-top: 0px; padding-top: 0px;}
+#HeaderTitle h3 {margin-top:0px; padding-top: 4%;}
+
+#ItemTitle {font-weight: bold; font-size: 30px;}
+
+.LogXButton { width:70px; height:30px; margin-top: 8%; margin-left:15px;}
+
+.group:after {
+	content: "";
+	display: table;
+	clear: both;
+}
