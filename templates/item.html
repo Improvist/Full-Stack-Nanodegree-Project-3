@@ -1,0 +1,17 @@
+<html>
+	<body>
+		{% if loggedIn == True %}
+		<form action="{{ url_for('signout') }}" method="post">
+	    <button name="logout_button" >Logout</button>
+		</form>
+		{% else %}
+		<form action="{{ url_for('DisplayLogin') }}" method="get">
+	    <button name="login_button" >Login</button>
+		</form>
+		{% endif %}
+		
+		<h1>{{Item.name}}</h1>
+		<br>
+		{{Item.description}}
+	</body>
+</html>

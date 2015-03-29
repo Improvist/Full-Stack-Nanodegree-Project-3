@@ -1,0 +1,31 @@
+<html>
+<body>
+	{% if loggedIn == True %}
+	<form action="{{ url_for('signout') }}" method="post">
+    <button name="logout_button" >Logout</button>
+	</form>
+	{% else %}
+	<form action="{{ url_for('DisplayLogin') }}" method="get">
+    <button name="login_button" >Login</button>
+	</form>
+	{% endif %}
+	
+<form action="{{ url_for('edit_post') }}" method=post>
+	<dl>Leave items blank if you do not want to edit that field.
+	<dt>New Item Name:
+	<dd><input type=text size=30 name=NewName value={{OldItem.name}}>
+	<dt>New Item Category:
+	<dd><select name=NewCategory value={{OldItem.category}}> 
+		{%for o in options %}
+		<option name="{{o.name}}" {% if o.name==OldItem.category %} selected="selected" {% endif %}>
+			{{o.name}}
+		</option>
+		{% endfor %}
+	    </select>
+	<dt>New Item Description:
+	<dd><input type=textarea name=NewDescription value="{{OldItem.description}}">
+	<dd><input type=submit value="Save Changes">
+	</dl>	
+</form>
+</body>
+</html>

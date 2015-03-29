@@ -1,0 +1,29 @@
+<html>
+<body>
+	{% if loggedIn == True %}
+	<form action="{{ url_for('signout') }}" method="post">
+    <button name="logout_button" >Logout</button>
+	</form>
+	{% else %}
+	<form action="{{ url_for('DisplayLogin') }}" method="get">
+    <button name="login_button" >Login</button>
+	</form>
+	{% endif %}
+	
+<form action="{{ url_for('add_post') }}" method=post>
+	<dl>
+	<dt>Item Name:
+	<dd><input type=text size=30 name=ItemName>
+	<dt>Item Category:
+	<dd><select name=ItemCategory width:"50px">
+	    {% for o in options %}
+		<option name="{{o.name}}">{{o.name}}</option>
+	    {% endfor %}
+	    </select>
+	<dt>Item Description:
+	<dd><input type=textarea name=ItemDescription rows=5 cols=50>
+	<dd><input type=submit value="Add Item">	
+	</dl>
+</form>	
+</body>
+</html>
