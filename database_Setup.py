@@ -5,9 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
 Base = declarative_base()
-
-#Table class declarations go here:
-
+# TABLE CLASS DECLARATIONS #########################
 #Users table
 class Users(Base):
 	__tablename__ = 'users'
@@ -40,7 +38,7 @@ class Categories(Base):
 	description = Column(String(1000), nullable=False)
 	date_added = Column(DateTime, nullable=False)
 	
-### CLOSING CODE ###
+### CLOSING CODE ##################################
 engine = create_engine('postgresql:///item_catalog.db')
 
 Base.metadata.create_all(engine)
