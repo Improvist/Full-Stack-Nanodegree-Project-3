@@ -6,17 +6,12 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 # TABLE CLASS DECLARATIONS #########################
-#Users table
-class Users(Base):
-	__tablename__ = 'users'
-	name = Column(String(225), nullable=False)
-	username = Column(String(225), nullable=False, primary_key=True)
-	password = Column(String(225), nullable=False) #unencrypted
 
 #Items table
 class Items(Base):
 	__tablename__ = 'items'
-	name = Column(String(225), nullable=False, primary_key=True)
+	id = Column(Integer, primary_key=True)
+	name = Column(String(225), nullable=False)
 	description = Column(String(1000), nullable=False)
 	category = Column(String(225), nullable=False)
 	date_added = Column(DateTime, nullable=False)
@@ -34,6 +29,7 @@ class Items(Base):
 #Categories Table
 class Categories(Base):
 	__tablename__ = 'categories'
+	id = Column(Integer, primary_key=True)
 	name = Column(String(225), nullable=False, primary_key=True)
 	description = Column(String(1000), nullable=False)
 	date_added = Column(DateTime, nullable=False)

@@ -1,41 +1,38 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, escape
 from sqlalchemy import create_engine, desc, func, and_
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Items, Users, Categories
+from database_setup import Base, Items, Categories
 from functools import wraps
-from werkzeug import generate_password_hash
+from flask.ext.github import GitHub
 
 app = Flask(__name__)
+
+#Github authorization configuration
+app.config['GITHUB_CLIENT_ID'] = 'a0e593ee7bd5a5c57017'
+app.config['GITHUB_CLIENT_SECRET'] = 'ea8eb7257d0524e89442fd9a097c0c3d667b11f1'
+github = GitHub(app)
 
 #Setup the ORM interface for use within this file
 engine = create_engine('postgresql:///item_catalog.db')
 Base.metadata.bind=engine
 DBSession = sessionmaker(bind = engine)
 db_session = DBSession()
-#Insert default user/pass combo into Users
-BasicUser = Users(name='Default',username='admin',password='admin')
-db_session.merge(BasicUser)
-db_session.commit()
 
 # AUTHORIZATION LOGIC ##################################
 #Display page for login
 @app.route('/catalog/login')
 def DisplayLogin():
-	return render_template('login.html')
+	return github.authorize()
 
-#Method for determining if a user is in the system
-@app.route('/catalog/auth_user', methods=['POST']) 
-def auth_user():
-	username = request.form['username']
-	password = request.form['password']
-	resultSetCount = db_session.query(Users).filter(and_(Users.username==username,Users.password==password)).count()
-	#If a record matches the users credentials; they are a user
-	if resultSetCount > 0:
-		session['username'] = username
-		return redirect(url_for('DisplayHome'))
-	else:
-		#Alert if the user was not actually in the system
-		return render_template('login.html', message='No user/password combination found.')
+@app.route('/github-callback')
+@github.authorized_handler
+def authorized(oauth_token):
+		if oauth_token is None:
+			return DisplayHome(oauth_token, message="Authorization failed.")
+			#return render_template('/home', message="Authorization failed.")
+		#return render_template('/home', message="Authorization successful.")
+		return DisplayHome(oauth_token,  message="Authorization successful.")
+
 #Routing that removes the user's login from their session (logging them out)
 @app.route('/catalog/logout', methods=['POST'])
 def signout():
@@ -56,7 +53,9 @@ def auth_user(f):
 # VIEW MAPPINGS ########################################
 @app.route('/')
 @app.route('/home')
-def DisplayHome():
+def DisplayHome(oauth_token=None, message=''):
+	if oauth_token is not None:
+		session['username'] = oauth_token
 	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
@@ -68,11 +67,10 @@ def DisplayHome():
 	except:
 		print 'An error has occurred in DisplayHome()'
 		return render_template('error.html', loggedIn=loggedIn, message='An unrecoverable error has occured.')
-	return render_template('home.html', categories=categories, items=latest_items, loggedIn=loggedIn)
+	return render_template('home.html', categories=categories, items=latest_items, loggedIn=loggedIn, message=message)
 
 @app.route('/catalog/<string:category_id>/<string:category_item_id>/')
 def DisplayCatalogItem(category_id, category_item_id):
-	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
@@ -86,7 +84,6 @@ def DisplayCatalogItem(category_id, category_item_id):
 
 @app.route('/catalog/<string:category_id>/items')
 def DisplayCategory(category_id):
-	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
@@ -97,22 +94,11 @@ def DisplayCategory(category_id):
 	except:
 		print 'Error in DisplayCategory()'
 		return render_template('error.html', loggedIn=loggedIn, message='An unrecoverable error has occured.')
-	return render_template('category_list.html', items=items_in_category, categories=categories, loggedIn=loggedIn)
-
-
-@app.route('/catalog/add_user')
-@auth_user
-def DisplayAddUser():
-	#Check login status and send it to the template
-	loggedIn = False
-	if 'username' in session:
-		loggedIn = True
-	return render_template('add_user.html', loggedIn=loggedIn)
+	return render_template('category_list.html', items=items_in_category, categories=categories, loggedIn=loggedIn, category=category_id)
 
 @app.route('/catalog/<string:category_item_id>/edit')
 @auth_user
 def DisplayEditItem(category_item_id):
-	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
@@ -127,7 +113,6 @@ def DisplayEditItem(category_item_id):
 @app.route('/catalog/<string:category_item_id>/delete')
 @auth_user
 def DisplayDeleteItem(category_item_id):
-	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
@@ -141,7 +126,6 @@ def DisplayDeleteItem(category_item_id):
 @app.route('/catalog/add_item')
 @auth_user
 def DisplayAddItem():
-	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
@@ -156,7 +140,6 @@ def DisplayAddItem():
 @app.route('/catalog/add_category')
 @auth_user
 def DisplayAddCategory():
-	#Check login status and send it to the template
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
@@ -177,14 +160,15 @@ def DisplayCatalogJson():
 # All of the logic controllers intercept on POST to receive form submissions
 @app.route('/catalog/delete_item', methods=['POST'])
 def delete_post():
-	#Check login status and send it to the template if necessary
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
+	else:
+		return render_template('error.html', loggedIn=loggedIn, message='You need to log in first.')
 	try:
 		#Grab the desired deletion target (by name), then delete and commit
-		itemName = request.form['TargetName']
-		targetItem = db_session.query(Items).filter_by(name=itemName).first()
+		itemId = request.form['TargetName']
+		targetItem = db_session.query(Items).filter_by(id=itemId).first()
 		db_session.delete(targetItem);
 		db_session.commit()
 	except:
@@ -196,16 +180,18 @@ def delete_post():
 
 @app.route('/catalog/edit_item', methods=['POST'])
 def edit_post():
-	#Check login status and send it to the template if necessary
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
+	else:
+		return render_template('error.html', loggedIn=loggedIn, message='You need to log in first.')
 	try:
 		#Grab the new item details from the form, create an item in the ORM, then merge it into the table
 		itemName = request.form['NewName']
 		itemDescription = request.form['NewDescription']
 		itemCategory = request.form['NewCategory']
-		newItem = Items(name = itemName, description = itemDescription, category = itemCategory, date_added = func.now())
+		itemId = request.form['OldId']
+		newItem = Items(id=itemId, name = itemName, description = itemDescription, category = itemCategory, date_added = func.now())
 		db_session.merge(newItem)
 		db_session.commit()
 	except:
@@ -217,10 +203,11 @@ def edit_post():
 
 @app.route('/catalog/add_item', methods=['POST'])
 def add_post():
-	#Check login status and send it to the template if necessary
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
+	else:
+		return render_template('error.html', loggedIn=loggedIn, message='You need to log in first.')
 	try:
 		#Grab the new item and add/commit it to the DB
 		itemName = request.form['ItemName']
@@ -235,36 +222,13 @@ def add_post():
 		return render_template('error.html', loggedIn=loggedIn, message='An unrecoverable error has occured.')
 	return redirect(url_for('DisplayHome'))
 
-@app.route('/catalog/add_user', methods=['POST'])
-def add_user():
-	#Check login status and send it to the template if necessary
-	loggedIn = False
-	if 'username' in session:
-		loggedIn = True
-	try:
-		#Grab the new user data from the form and add/commit it to the DB
-		realName = request.form['RealName']
-		userName = request.form['Username']
-		password = request.form['Password']
-		cpass = request.form['ConfirmPassword']
-		#If the passwords don't match, notify the user and do not insert
-		if cpass != password:
-			return render_template('add_user.html', message='Passwords do not match. Try again.', loggedIn=loggedIn)
-		newUser = Users(name=realName, username=userName, password=password)
-		db_session.add(newUser)
-		db_session.commit()
-	except:
-		print 'Error in add_user(). Rolling back.'
-		db_session.rollback() #Be sure to rollback if there's an exception
-		return render_template('error.html', loggedIn=loggedIn, message='An unrecoverable error has occured.')
-	return redirect(url_for('DisplayHome'))
-
 @app.route('/catalog/add_category', methods=['POST'])
 def add_category():
-	#Check login status and send it to the template if necessary
 	loggedIn = False
 	if 'username' in session:
 		loggedIn = True
+	else:
+		return render_template('error.html', loggedIn=loggedIn, message='You need to log in first.')
 	try:
 		#Grab new category information from the form and add/commit it to the DB
 		catName = request.form['CategoryName']

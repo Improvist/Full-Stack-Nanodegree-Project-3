@@ -5,5 +5,10 @@
 		<dt id="ItemTitle">{{Item.name}} <i>({{Item.category}})</i>
 		<dd><i>{{Item.description}}</i>
 		</dl>
+		<br><br><br><br><br>
+		{% if loggedIn == True %}
+		<a id="UpdateButton" href="/catalog/{{Item.name}}/edit">Update</a>
+		<a id="DeleteButton" href="/catalog/{{Item.name}}/delete">Delete</a>
+		{% endif %}
 </div>
 {% endblock %}

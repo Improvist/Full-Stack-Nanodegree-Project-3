@@ -11,7 +11,7 @@
 	</div>
 
 	<div style="float: right">
-		<h2>{{items[0].category}} Items ({{items|length}})</h2>
+		<h2>{{category}} Items ({{items|length}})</h2>
 		<dl>
 			{% for i in items %}
 			<dd><a href='/catalog/{{i.category}}/{{i.name}}'>{{i.name}}</a>

@@ -9,7 +9,6 @@ FILES:
 	templates/category_list.html
 	templates/item.html
 	templates/add_item.html
-	templates/add_user.html
 	templates/delete.html
 	templates/edit.html
 	templates/login.html
@@ -30,7 +29,6 @@ DIRECTIONS:
     	-localhost:5000/catalog/<ITEM_NAME>/delete				Displays an item and prompts for deletion
     	-localhost:5000/catalog/add_item						Displays a form that allows an item to be added (must be logged in)
     	-localhost:5000/catalog/add_category					Displays a form that allows a category to be added (must be logged in)
-    	-localhost:5000/catalog/add_user						Displays a form that allows a user to be added (must be logged in)
     	-localhost:5000/catalog.json							Displays a JSON string response
 NOTES: 
 	The webservice creates a default user under the name password "admin/admin" for ease of testing.
